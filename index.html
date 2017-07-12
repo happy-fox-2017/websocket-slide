@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+     <head>
+          <meta charset="utf-8">
+          <title>Web Socket Slide</title>
+          <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+          <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+          <script src="https://unpkg.com/vue" charset="utf-8"></script>
+          <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+          <style media="screen">
+               img #image {
+                    height: 900px;
+               }
+               .container-fluid.slide.carousel-inner img {
+                    height: 1000px;
+                    width: 5000px
+               }
+          </style>
+     </head>
+     <body>
+          <div id="app">
+               <nav class="navbar navbar-light  navbar-fixed-top" style="background-color: #d62d20; color:white; font-size:22px" role="navigation">
+                 <!-- Brand and toggle get grouped for better mobile display -->
+                 <div class="navbar-header">
+                   <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                               <span class="sr-only">Toggle navigation</span>
+                               <span class="icon-bar"></span>
+                               <span class="icon-bar"></span>
+                               <span class="icon-bar"></span>
+                           </button>
+                   <a class="navbar-brand" href="#"></a>
+                 </div>
+                 <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+                 <div class="collapse navbar-collapse navbar-ex1-collapse">
+                   <ul class="nav navbar-nav side-nav">
+                     <li class="active" >
+                       <a href="/"><i class="fa fa-fw fa-dashboard" ></i>Home</a>
+                     </li>
+                     <li>
+                       <a  href="#" ><i class="fa fa-fw fa-edit"></i>Project</a>
+                     </li>
+                   </ul>
+                 </div>
+                 <!-- /.navbar-collapse -->
+               </nav>
+               <br>
+               <br>
+
+                 <div class="container-fluid">
+                       <h1 style="align:center">Web Socket Slider</h1>
+                 </div>
+
+               <div class="container-fluid">
+                    <div class="slide">
+                         <div class="carousel-inner">
+                         <nav align="center" >
+                              <button class="btn btn-success" v-on:click="prevSlide">Previous Slide </button>
+                              <button class="btn btn-success" v-on:click="nextSlide">Next Slide </button>
+                         </nav>
+                         <div>
+                         <img  id="image" v-bind:src=`img/${slide[linkindex]}` alt="..." style="width : 100%; height: 500px;" />
+                        </div>
+                        </div>
+
+                        <!-- Left and right controls -->
+                          <a id="left" v-on:click="prevSlide" class="left carousel-control"  data-slide="prev">
+                             <span class="glyphicon glyphicon-chevron-left"></span>
+                             <span class="sr-only">Previous</span>
+                          </a>
+                          <a id="right" v-on:click="nextSlide" class="right carousel-control"  data-slide="next">
+                             <span class="glyphicon glyphicon-chevron-right"></span>
+                             <span class="sr-only">Next</span>
+                          </a>
+                    </div>
+               </div>
+
+               </div>
+
+               <script>
+               var config = {
+                   apiKey: "AIzaSyCkZzHrERUFeWwZFw088nVugqCHqv-1hgs",
+                   authDomain: "webslide-a7384.firebaseapp.com",
+                   databaseURL: "https://webslide-a7384.firebaseio.com",
+                   projectId: "webslide-a7384",
+                   storageBucket: "webslide-a7384.appspot.com",
+                   messagingSenderId: "290531665249"
+                 };
+                 firebase.initializeApp(config);
+
+               var database = firebase.database()
+               function Slider(slideId, urlImg) {
+                 firebase.database().ref('slide/' + slideId).set({
+                   linkindex : urlImg
+                 });
+               }
+
+               var app = new Vue({
+                 el: '#app',
+                 data:{
+                   linkindex : 0,
+                   slide : ['acerid-1.png','acerid-2.png','acerid-3.png' ]
+                 },
+                 methods : {
+                   nextSlide:function(){
+                     if(this.linkindex >= this.slide.length - 1){
+                       this.linkindex = this.slide.length - 1
+                     } else {
+                      this.linkindex++
+                      Slider('001', this.linkindex)
+                     }
+                   },
+                   prevSlide:function(){
+                     if(this.linkindex > 0){
+                       this.linkindex --
+                       Slider('001', this.linkindex)
+                     } else {
+                       this.linkindex = 0
+                     }
+                   }
+                 },
+                created: function(){
+                 var self = this
+                   var slideId = '001'
+                   var readSlide = firebase.database().ref('slide/'+slideId);
+                     readSlide.on('value', function(data) {
+                     self.linkindex = data.val().linkindex
+                   });
+                }
+               })
+
+               </script>
+     </body>
+</html>
